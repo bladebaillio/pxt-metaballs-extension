@@ -15,6 +15,12 @@ namespace metaballs {
     const INFLUENCE_THRESHOLD = 0.1 // Minimum influence to consider
     const MAX_DISTANCE = 200 // Maximum distance to calculate influence
 
+    // Detect tile size
+    function getTileSize(): number {
+        const tm = game.currentScene().tileMap
+        return tm ? tm.tileWidth : 16 // Default to 16 if no tilemap
+    }
+
     class MetaballObject {
         constructor(
             public x: number,
@@ -37,11 +43,15 @@ namespace metaballs {
             public tileX: number,
             public tileY: number,
             public strength: number,
-            public color: number
+            public color: number,
+            tileSize?: number
         ) {
-            // Precalculate world coordinates
-            this.worldX = tileX * 16 + 8
-            this.worldY = tileY * 16 + 8
+            // Get the tile size, defaulting to detected size
+            const size = tileSize || getTileSize()
+            
+            // Calculate world coordinates based on actual tile size
+            this.worldX = tileX * size + (size / 2)
+            this.worldY = tileY * size + (size / 2)
         }
     }
 
@@ -82,8 +92,9 @@ namespace metaballs {
         const currentTilemap = game.currentScene().tileMap
         if (!currentTilemap) return
 
-        const cols = SCREEN_WIDTH >> 4 // Divide by 16
-        const rows = SCREEN_HEIGHT >> 4
+        const tileSize = getTileSize()
+        const cols = Math.ceil(SCREEN_WIDTH / tileSize)
+        const rows = Math.ceil(SCREEN_HEIGHT / tileSize)
 
         for (let col = 0; col < cols; col++) {
             for (let row = 0; row < rows; row++) {
@@ -170,3 +181,4 @@ namespace metaballs {
         }
     }
 }
+
