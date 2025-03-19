@@ -17,8 +17,25 @@ namespace metaballs {
 
     // Detect tile size
     function getTileSize(): number {
+        // In MakeCode Arcade, we can detect the tile size by checking a tile location's coordinates
+        // Get a reference tile location and check its screen coordinates
         const tm = game.currentScene().tileMap
-        return tm ? tm.tileWidth : 16 // Default to 16 if no tilemap
+        if (!tm) return 16 // Default to 16 if no tilemap
+        
+        // Create a test location and check its screen position
+        const testLoc = tiles.getTileLocation(1, 1)
+        if (!testLoc) return 16
+        
+        // The difference between adjacent tiles will tell us the tile size
+        const loc0 = tiles.getTileLocation(0, 0)
+        const loc1 = tiles.getTileLocation(1, 0)
+        
+        if (loc0 && loc1) {
+            // Calculate the difference between x coordinates of adjacent tiles
+            return loc1.x - loc0.x
+        }
+        
+        return 16 // Default fallback
     }
 
     class MetaballObject {
@@ -181,4 +198,3 @@ namespace metaballs {
         }
     }
 }
-
